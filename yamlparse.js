@@ -16,7 +16,7 @@ function yamlparse(rawYaml) {
   let indentVal = []
   for (let i in splYaml) {
     if (meaning[i] === `effect`) {
-      indentVal[i] = splYaml[i].match(/^[ \t]*/)[0].length
+      indentVal[i] = (splYaml[i].match(/^[ \t]*/) || [])[0].length
     }
     else {
       indentVal[i] = 0
@@ -33,7 +33,7 @@ function yamlparse(rawYaml) {
       }
     }
   }
-  let mode = Object.keys(indentDiff)[0]
+  let mode = Number(Object.keys(indentDiff)[0])
   for (let i = 1; i < Object.keys(indentDiff).length; i++) {
     if (indentDiff[Object.keys(indentDiff)[i]] > indentDiff[Object.keys(indentDiff)[i - 1]]) {
       mode = Number(Object.keys(indentDiff)[i])
@@ -195,10 +195,10 @@ function yamlparse(rawYaml) {
   }
   return procYaml
   .join(``)
+  .replace(/(#.*)/gm, `<span class="comment">$1</span>`)
   .replace(/^(- )?(\d+):/gm, `$1<span class="number">$2</span>:`)
-  .replace(/^(.*?)(?<!\\):([ \t]*.*$|[ \t]*#.*$)/gm, `<span class="key">$1</span>:$2`)
-  .replace(/(?<=^.*?):([ \t]*)(?=.*$)/gm, `<span class="colon">:</span>$1`)
+  .replace(/^(.+?)(?<!\\(?:\\\\)*):([ \t]*.*$)/gm, `<span class="key">$1</span>:<span class="value">$2</span>`)
+  .replace(/(?<=^.*?):([ \t]*)(?=.*$)/gm, `<span class="colon">:</span> $1`)
   .replace(/^(.*?)- /gm, `$1<span class="bullet">-</span> `)
-  .replace(/(#.*)$/gm, `<span class="comment">$1</span>`)
   .replace(/(?<=:.*?[ \t]+)\|/g, `<span class="vertical-bar">|</span>`)
 }
