@@ -195,10 +195,11 @@ function yamlparse(rawYaml) {
   }
   return procYaml
   .join(``)
-  .replace(/(#.*)/gm, `<span class="comment">$1</span>`)
-  .replace(/^(- )?(\d+):/gm, `$1<span class="number">$2</span>:`)
-  .replace(/^(.+?)(?<!\\(?:\\\\)*):([ \t]*.*$)/gm, `<span class="key">$1</span>:<span class="value">$2</span>`)
-  .replace(/(?<=^.*?):([ \t]*)(?=.*$)/gm, `<span class="colon">:</span> $1`)
-  .replace(/^(.*?)- /gm, `$1<span class="bullet">-</span> `)
-  .replace(/(?<=:.*?[ \t]+)\|/g, `<span class="vertical-bar">|</span>`)
+  .replace(/(#.*)/g, `<span class="comment">$1</span>`)
+  .replace(/(?<=\n|^)(- )?(\d+):/g, `$1<span class="number">$2</span>:`)
+  .replace(/(?<=\n|^)((?!.*\\(\\\\)*:).*?)(?<!\\(\\\\)*)(?=:)/g, `<span class="key">$1</span>`)
+  .replace(/(?<=\n|^)((?!.*\\(?:\\\\)*:).*?)(?<!\\(?:\\\\)*): [ \t]*(.+)(\n|$)/g, `$1:<span class="value">$2</span>$3`)
+  .replace(/(?<=\n|^)((?!.*\\(?:\\\\)*:).*?)(?<!\\(?:\\\\)*):/g, `$1<span class="colon">:</span>`)
+  .replace(/(?<=\n|^)- /g, `<span class="bullet">-</span>`)
+  .replace(/(?<=\n|^)\|/g, `<span class="vertical-bar">|</span>`)
 }
