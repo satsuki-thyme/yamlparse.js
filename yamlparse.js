@@ -39,7 +39,7 @@ function yamlparse(rawYaml) {
   let prevIndentNum = 0
   let keyAcc = []
   let classAcc = []
-  let keyAggSrc = new Set()
+  let keyAgg = new Map()
   let i = 0
   return new Promise(resolve => {
     fn()
@@ -67,11 +67,12 @@ function yamlparse(rawYaml) {
             splYaml[i]
             .match(/^((?!.*\\(\\\\)*:).*)(?<!\\(\\\\)*)(?=:)/) || [``]
           )[0]
+          .replace(/^- /, ``)
           .replace(/ /g, `-`)
           .replace(/^([0-9])/, `n$1`)
         }`
         let keySrc = (splYaml[i].match(/^((?!.*\\(\\\\)*:).*)(?<!\\(\\\\)*)(?=:)/) || [``])[0].replace(/^- /, ``)
-        keyAggSrc.add(keySrc)
+        keyAgg.set(keySrc, clss)
         let value = `${
           (
             splYaml[i]
@@ -283,17 +284,6 @@ function yamlparse(rawYaml) {
     }
   })
   .then(rly => {
-    return [rly.join(``), procKey()]
+    return [rly.join(``), keyAgg]
   })
-  function procKey() {
-    let keyAgg = Array.from(keyAggSrc)
-    .map(rly => {
-      let w = {}
-      w[rly] = rly
-      .replace(/ /g, `-`)
-      .replace(/^([0-9])/, `n$1`)
-      return w
-    })
-    
-  }
 }
