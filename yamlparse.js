@@ -78,6 +78,9 @@ function yamlparse(rawYaml) {
         if (Number(valueContent.replace(/^ *| *$/, ``))) {
           valueContent = valueContent.replace(/^( *)(\d+)( *)$/, `$1<span class="number">$2</span>$3`)
         }
+        if (/^ *\| *$/.test(valueContent)) {
+          valueContent = ` <span class="vertical-bar">|</span>`
+        }
         let value = `${
           valueContent
           .replace(/(.+)/, `<span class="value">$1</span>`)
@@ -142,6 +145,9 @@ function yamlparse(rawYaml) {
         let valueContent = splYaml[i]
         if (Number(valueContent.replace(/^ | $/, ``))) {
           valueContent = `<span class="number">${valueContent}</span>`
+        }
+        if (/^ *\| *$/.test(valueContent)) {
+          valueContent = `<span class="vertical-bar">|</span>`
         }
         let value = `${
           valueContent
