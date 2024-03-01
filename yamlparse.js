@@ -54,30 +54,32 @@ function yamlparse(rawYaml) {
       if (meaning[i] === `key`) {
         let diff = indentNum[i] - prevIndentNum
         prevIndentNum = indentNum[i]
+        let keyContent = (splYaml[i].match(/^((?!\\(\\\\)*:).*)(?<!\\(\\\\)*)(?=:)/) || [``])[0]
+        if (Number(keyContent.replace(/^ *| *$/, ``))) {
+          keyContent = keyContent.replace(/^( *)(\d+)( *)$/, `$1<span class="number">$2</span>$3`)
+        }
         let key = `${
-          (
-            splYaml[i]
-            .match(/^((?!.*\\(\\\\)*:).*)(?<!\\(\\\\)*)(?=:)/) || [``]
-          )[0]
+          keyContent
           .replace(/^(- )?(.*)/, `$1<span class="key">$2</span>`)
           .replace(/^- /g, `<span class="bullet">-</span> `)
         }<span class="colon">:</span> `
         let clss = `key-group ${
           (
             splYaml[i]
-            .match(/^((?!.*\\(\\\\)*:).*)(?<!\\(\\\\)*)(?=:)/) || [``]
+            .match(/^((?!\\(\\\\)*:).*)(?<!\\(\\\\)*)(?=:)/) || [``]
           )[0]
           .replace(/^- /, ``)
           .replace(/ /g, `-`)
           .replace(/^([0-9])/, `n$1`)
         }`
-        let keySrc = (splYaml[i].match(/^((?!.*\\(\\\\)*:).*)(?<!\\(\\\\)*)(?=:)/) || [``])[0].replace(/^- /, ``)
+        let keySrc = (splYaml[i].match(/^((?!\\(\\\\)*:).*)(?<!\\(\\\\)*)(?=:)/) || [``])[0].replace(/^- /, ``)
         keyAgg.set(keySrc, clss)
+        let valueContent = (splYaml[i].match(/(?<=:)(.*)$/) || [``])[0]
+        if (Number(valueContent.replace(/^ *| *$/, ``))) {
+          valueContent = valueContent.replace(/^( *)(\d+)( *)$/, `$1<span class="number">$2</span>$3`)
+        }
         let value = `${
-          (
-            splYaml[i]
-            .match(/(?<=:)(.*)$/) || [``]
-          )[0]
+          valueContent
           .replace(/(.+)/, `<span class="value">$1</span>`)
         }`
         if (i > 0 && i < EOA) {
@@ -137,8 +139,12 @@ function yamlparse(rawYaml) {
       if (meaning[i] === `value`) {
         let diff = indentNum[i] - prevIndentNum
         prevIndentNum = indentNum[i]
+        let valueContent = splYaml[i]
+        if (Number(valueContent.replace(/^ | $/, ``))) {
+          valueContent = `<span class="number">${valueContent}</span>`
+        }
         let value = `${
-          splYaml[i]
+          valueContent
           .replace(/^(- )?(.*)$/, `$1<span class="value">$2</span>`)
           .replace(/^- /, `<span class="bullet">-</span> `)
         }`
